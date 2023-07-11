@@ -7,17 +7,20 @@ import SignIn from './pages/SingIn';
 import PrivateRoute from './components/PrivateRoute';
 import Home from './pages/Home';
 import PublicRoutr from './components/PublicRoute';
+import { ProfileProvider } from './context/profile.context';
 
 function App() {
   return (
-    <Switch>
-      <PublicRoutr path="/signin">
-        <SignIn />
-      </PublicRoutr>
-      <PrivateRoute path="/">
-        <Home />
-      </PrivateRoute>
-    </Switch>
+    <ProfileProvider>
+      <Switch>
+        <PublicRoutr path="/signin">
+          <SignIn />
+        </PublicRoutr>
+        <PrivateRoute path="/">
+          <Home />
+        </PrivateRoute>
+      </Switch>
+    </ProfileProvider>
   );
 }
 
