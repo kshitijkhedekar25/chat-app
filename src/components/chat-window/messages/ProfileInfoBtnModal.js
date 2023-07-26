@@ -8,7 +8,7 @@ const ProfileInfoBtnModal = ({ profile, ...btnProps }) => {
 
   const { name, avatar, createdAt } = profile;
 
-  const shortName = profile.name.split('')[0];
+  const shortName = profile.name.split(' ')[0];
 
   const memberSince = new Date(createdAt).toLocaleDateString();
 
