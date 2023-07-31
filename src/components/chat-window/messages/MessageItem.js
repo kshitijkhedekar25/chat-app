@@ -1,11 +1,21 @@
-import React from 'react';
+import React, { memo } from 'react';
 import TimeAgo from 'timeago-react';
 import ProfileAvatar from '../../ProfileAvatar';
 import ProfileInfoBtnModal from './ProfileInfoBtnModal';
 import PresenceDot from '../../PresenceDot';
+import { Button } from 'rsuite';
+import { useCurrentRoom } from '../../../context/current-room.context';
+import { auth } from '../../../misc/firebase';
 
-const MessageItem = ({ messages }) => {
+const MessageItem = ({ messages, handleAdmin }) => {
   const { author, createdAt, text } = messages;
+
+  const isAdmin = useCurrentRoom(v => v.isAdmin);
+  const admins = useCurrentRoom(v => v.admins);
+
+  const isMsgAuthorAdmin = admins.includes(author.uid);
+  const isAuther = auth.currentUser.uid === author.uid;
+  const canGrantAdmin = isAdmin && !isAuther;
 
   return (
     <li className="padded mb-1">
@@ -23,7 +33,15 @@ const MessageItem = ({ messages }) => {
           profile={author}
           appearance="link"
           className="p-0 ml-1 text-black"
-        />
+        >
+          {canGrantAdmin && (
+            <Button block onClick={() => handleAdmin(author.uid)} color="blue">
+              {isMsgAuthorAdmin
+                ? 'Remove admin permission'
+                : 'Give admin in this room'}
+            </Button>
+          )}
+        </ProfileInfoBtnModal>
         <TimeAgo
           datetime={createdAt}
           className="font-normal text-black-45 ml-2"
@@ -36,4 +54,4 @@ const MessageItem = ({ messages }) => {
   );
 };
 
-export default MessageItem;
+export default memo(MessageItem);
