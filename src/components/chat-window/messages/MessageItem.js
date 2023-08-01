@@ -9,7 +9,7 @@ import { auth } from '../../../misc/firebase';
 import { useHover, useMediaQuery } from '../../../misc/custom-hooks';
 import IconBtnControl from './IconBtnControl';
 
-const MessageItem = ({ messages, handleAdmin, handleLike }) => {
+const MessageItem = ({ messages, handleAdmin, handleLike, handleDelete }) => {
   const { author, createdAt, text, likes, likeCount } = messages;
 
   const [selfRef, isHovered] = useHover();
@@ -19,8 +19,8 @@ const MessageItem = ({ messages, handleAdmin, handleLike }) => {
   const admins = useCurrentRoom(v => v.admins);
 
   const isMsgAuthorAdmin = admins.includes(author.uid);
-  const isAuther = auth.currentUser.uid === author.uid;
-  const canGrantAdmin = isAdmin && !isAuther;
+  const isAuthor = auth.currentUser.uid === author.uid;
+  const canGrantAdmin = isAdmin && !isAuthor;
 
   const canShowIcons = isMobile || isHovered;
   const isLiked = likes && Object.keys(likes).includes(auth.currentUser.uid);
@@ -66,6 +66,15 @@ const MessageItem = ({ messages, handleAdmin, handleLike }) => {
           onClick={() => handleLike(messages.id)}
           badgeContent={likeCount}
         />
+
+        {isAuthor && (
+          <IconBtnControl
+            isVisible={canShowIcons}
+            iconName="close"
+            tooltip="Delete this message"
+            onClick={() => handleDelete(messages.id)}
+          />
+        )}
       </div>
       <div>
         <span className="word-breal-all">{text}</span>
