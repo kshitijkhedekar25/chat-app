@@ -6,13 +6,14 @@ import PresenceDot from '../../PresenceDot';
 import { Button } from 'rsuite';
 import { useCurrentRoom } from '../../../context/current-room.context';
 import { auth } from '../../../misc/firebase';
-import { useHover } from '../../../misc/custom-hooks';
+import { useHover, useMediaQuery } from '../../../misc/custom-hooks';
 import IconBtnControl from './IconBtnControl';
 
-const MessageItem = ({ messages, handleAdmin }) => {
-  const { author, createdAt, text } = messages;
+const MessageItem = ({ messages, handleAdmin, handleLike }) => {
+  const { author, createdAt, text, likes, likeCount } = messages;
 
   const [selfRef, isHovered] = useHover();
+  const isMobile = useMediaQuery('(max-width: 922px)');
 
   const isAdmin = useCurrentRoom(v => v.isAdmin);
   const admins = useCurrentRoom(v => v.admins);
@@ -20,6 +21,9 @@ const MessageItem = ({ messages, handleAdmin }) => {
   const isMsgAuthorAdmin = admins.includes(author.uid);
   const isAuther = auth.currentUser.uid === author.uid;
   const canGrantAdmin = isAdmin && !isAuther;
+
+  const canShowIcons = isMobile || isHovered;
+  const isLiked = likes && Object.keys(likes).includes(auth.currentUser.uid);
 
   return (
     <li
@@ -55,12 +59,12 @@ const MessageItem = ({ messages, handleAdmin }) => {
         />
 
         <IconBtnControl
-          {...(true ? { color: 'red' } : {})}
-          isVisible
+          {...(isLiked ? { color: 'red' } : {})}
+          isVisible={canShowIcons}
           iconName="heart"
           tooltip="Like this message"
-          onClick={() => {}}
-          badgeContent={5}
+          onClick={() => handleLike(messages.id)}
+          badgeContent={likeCount}
         />
       </div>
       <div>
